@@ -223,3 +223,66 @@ SELECT *
 FROM dbo.EmployeeRecords
 WHERE (Department = 'HR' OR Department = 'Finance') AND Salary = 60000;
 ```
+## 7. BETWEEN, IN, and NOT Operators  
+
+SQL provides several operators to make filtering more flexible:  
+
+- **BETWEEN**: Selects values within a given range (inclusive).  
+- **IN**: Allows you to specify multiple values in the `WHERE` clause (shorter than multiple ORs).  
+- **NOT**: Excludes rows that match a condition.  
+
+---
+
+### **Retrieve all records**  
+Fetch all rows from the `EmployeeRecords` table.  
+
+```sql
+SELECT * 
+FROM dbo.EmployeeRecords;
+```
+### **NOT Operator (Exclude conditions)**  
+
+Fetch all records where `FirstName` is not `'John'` and `Salary` is not 60000.  
+
+```sql
+SELECT * 
+FROM dbo.EmployeeRecords
+WHERE NOT FirstName = 'John' AND NOT Salary = 60000;
+```
+### **BETWEEN Operator (Range filter)**  
+
+Fetch employees where `Salary` is between 75,000 and 85,000.  
+
+```sql
+SELECT * 
+FROM dbo.EmployeeRecords
+WHERE Salary BETWEEN 75000 AND 85000;
+```
+here it will also rows where salary is exactly 75000 and 85000 mean include lower and upper bound
+### **NOT BETWEEN Operator (Exclude range)**  
+
+Fetch employees where `Salary` is not between 75,000 and 85,000.  
+
+```sql
+SELECT * 
+FROM dbo.EmployeeRecords
+WHERE Salary NOT BETWEEN 75000 AND 85000;
+```
+### **IN Operator (Multiple values)**  
+
+Fetch employees where `Department` is either `'HR'` or `'IT'`.  
+
+```sql
+SELECT * 
+FROM dbo.EmployeeRecords
+WHERE Department IN ('HR', 'IT');
+```
+### **NOT IN Operator (Exclude multiple values)**  
+
+Fetch employees where `Department` is not `'HR'` or `'IT'`.  
+
+```sql
+SELECT * 
+FROM dbo.EmployeeRecords
+WHERE Department NOT IN ('HR', 'IT');
+```
