@@ -286,3 +286,53 @@ SELECT *
 FROM dbo.EmployeeRecords
 WHERE Department NOT IN ('HR', 'IT');
 ```
+## 8. INSERT INTO Statement  
+
+The **INSERT INTO** statement is used to add new rows of data into a table. You can either:  
+1. Specify column names (recommended).  
+2. Insert values into all columns without specifying column names (order must match table structure).  
+
+---
+
+### **View existing data in Employees table**  
+Fetch all current records from the `Employees` table.  
+
+```sql
+SELECT * 
+FROM dbo.Employees;
+```
+### **Insert a complete row (all columns specified)**  
+
+Add a new employee record with all details provided.  
+
+```sql
+INSERT INTO dbo.Employees (EmployeeID, FirstName, LastName, Department, Salary, HireDate)
+VALUES (6, 'Raj', 'Ambani', 'IT', 67000, '2023-04-20');
+```
+### **Insert partial data (only selected columns)**  
+
+Add a new employee by specifying only `EmployeeID`, `FirstName`, and `LastName`.  
+Other columns will take default values or remain `NULL`.  
+
+```sql
+INSERT INTO dbo.Employees (EmployeeID, FirstName, LastName)
+VALUES (7, 'Rohit', 'Mehera');
+```
+### **Insert all columns (without specifying names)**  
+
+Add a new employee by providing values for all columns in order.  
+
+```sql
+INSERT INTO dbo.Employees
+VALUES (8, 'Mahesh', 'Narang', 'HR', 73000, '2024-01-21');
+```
+Note: This requires that you provide values for every column in the exact order they are defined in the table.
+### **Check table structure (metadata)**  
+
+View column names, data types, and constraints of the `Employees` table using the system view `INFORMATION_SCHEMA.COLUMNS`.  
+
+```sql
+SELECT * 
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_NAME = 'Employees';
+```
