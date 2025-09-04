@@ -336,3 +336,258 @@ SELECT *
 FROM INFORMATION_SCHEMA.COLUMNS
 WHERE TABLE_NAME = 'Employees';
 ```
+## 9. SQL NULL OPERATOR  
+
+The `NULL` operator is used to **check for missing or unknown values** in a database.  
+
+---
+
+### 1. Insert Records with NULL or Empty Values  
+
+```sql
+INSERT INTO dbo.Employees
+VALUES (9,'Jay','','IT',73000,'2022-04-04');
+
+INSERT INTO dbo.Employees
+VALUES (10,'Nitin','shamani','0',54000,'2021-02-22');
+```
+📝 **These two statements insert new records:**  
+
+- In the first, `LastName` is given as an empty string `''`.  
+- In the second, `Department` is given as `'0'` (string, not `NULL`).  
+
+⚡ **Learning Note:**  
+- An empty string (`''`) is **not** the same as `NULL`.  
+- `'0'` is just text, not a missing value.  
+### **Incorrect NULL Comparison**  
+
+```sql
+SELECT * 
+FROM dbo.Employees 
+WHERE Department = NULL;
+```
+❌ This will not return any rows.  
+
+**Why?**  
+Because `NULL` means *"unknown"*, and SQL cannot compare unknown values using `=`.
+### **Correct NULL Check**  
+
+```sql
+SELECT * 
+FROM dbo.Employees 
+WHERE Department IS NULL;
+```
+✅ Returns rows where the `Department` column has `NULL` values.
+### **Check for NOT NULL**  
+
+```sql
+SELECT * 
+FROM dbo.Employees 
+WHERE Department IS NOT NULL;
+```
+✅ Returns rows where the `Department` column has valid values (not `NULL`).
+## 10. SQL UPDATE STATEMENT  
+
+The `UPDATE` statement is used to **modify existing records** in a table.  
+
+---
+
+### 1. Update Department Where Value is NULL  
+
+```sql
+UPDATE #1
+SET Department = 'HR'
+WHERE Department IS NULL;
+```
+✅ Updates all rows in table #1 where `Department` is `NULL` and sets it to `'HR'`.  
+
+⚡ **Learning Note:** Always use a `WHERE` clause to avoid updating all rows unintentionally.  
+### **Update Multiple Columns for a Specific Employee**  
+
+```sql
+UPDATE #1
+SET Salary = 89000, HireDate = '2023-01-01'
+WHERE EmployeeID = 7;
+```
+✅ Updates the `Salary` and `HireDate` for the employee whose `EmployeeID = 7`.  
+### **Update All Rows in a Table**  
+
+```sql
+UPDATE #2
+SET Department = 'Finance';
+```
+✅ Updates the `Department` column for all rows in table #2, setting the value to `'Finance'`.  
+
+⚠️ **Warning:** Without a `WHERE` clause, this affects every row in the table.
+## 11.SQL DELETE, TRUNCATE, and DROP Statements  
+
+These commands are used to **remove records or tables** in SQL.  
+
+---
+
+### **Delete Specific Records**  
+
+```sql
+DELETE FROM #3
+WHERE LastName = '' OR Department = '0';
+```
+✅ Deletes rows in #3 where `LastName` is empty (`''`) or `Department` equals `'0'`.  
+
+⚡ **Learning Note:** `DELETE` removes only the rows matching the `WHERE` condition.
+### **Delete All Records from a Table**  
+
+```sql
+DELETE FROM #4;
+```
+✅ Deletes all rows from table #4, but keeps the table structure intact.  
+
+⚠️ **Be careful:** Running `DELETE` without a `WHERE` removes every record.
+### **Truncate Table**  
+
+```sql
+TRUNCATE TABLE #3;
+```
+✅ Removes all rows from table #3 but keeps the structure intact.  
+
+⚡ **Note:** Faster than `DELETE` because it does not log individual row deletions.  
+
+❌ Cannot use `WHERE` with `TRUNCATE`.
+### **Drop Table**  
+
+```sql
+DROP TABLE #3;
+```
+✅ Deletes the entire table #3, including its structure.
+### **Difference Between DELETE, TRUNCATE, and DROP**  
+
+- **DELETE** → Removes specific rows (or all if no `WHERE`). Table structure remains.  
+- **TRUNCATE** → Removes all rows quickly. Table structure remains.  
+- **DROP** → Removes all rows and deletes the table structure itself.  
+
+## 12.SQL COMMENTS and TOP Clause  
+
+---
+
+### 1. Single-Line Comment  
+
+```sql
+-- Hi we are learning SQL Server
+```
+### **Multi-Line Comment**  
+
+```sql
+/*
+Hi
+we
+are
+learning
+SQL
+server
+*/
+SELECT * FROM dbo.Employees;
+```
+### **Using SELECT TOP**  
+
+```sql
+SELECT TOP 2 * FROM dbo.Employees;
+```
+🔎 Returns the first 2 rows from the `Employees` table.  
+`TOP n` is used to limit the number of rows returned.  
+
+⚡ Commonly used with `ORDER BY` to get the "Top N" highest/lowest records.
+## 13.SQL MIN, MAX & GROUP BY  
+
+The `MIN()` and `MAX()` aggregate functions return the **smallest** and **largest** values in a column.  
+`GROUP BY` is used to organize rows into groups for aggregation.  
+
+---
+
+### 1. Maximum Total Amount  
+
+```sql
+SELECT MAX(TotalAmount) [Maximum Amount] 
+FROM dbo.Sales;
+```
+### 2. Maximum Quantity Sold for Each ProductID  
+
+```sql
+-- Maximum Quantity sold for each productID
+SELECT ProductID, MAX(Quantity) [Maximum Quantity] 
+FROM dbo.Sales
+GROUP BY ProductID;
+```
+✅ Groups sales by `ProductID` and returns the maximum quantity sold for each product.
+### **Minimum Total Amount for Each StoreID**  
+
+```sql
+-- Show minimum TotalAmount for each StoreID
+SELECT StoreID, MIN(TotalAmount) [Minimum Total Amount] 
+FROM dbo.Sales
+GROUP BY StoreID;
+```
+✅ Groups sales by `StoreID` and shows the minimum `TotalAmount` for each store.
+## 14.SQL SUM, AVG, COUNT & GROUP BY  
+
+The aggregate functions `SUM()`, `AVG()`, and `COUNT()` are used to perform calculations on numeric or categorical data.  
+`GROUP BY` helps organize rows into groups for aggregation.  
+
+---
+
+### 1. SUM – Total Quantity  
+
+```sql
+SELECT SUM(Quantity) [Total Quantity] 
+FROM dbo.Sales;
+```
+✅ Returns the sum of all quantities sold.
+### **AVG – Average Quantity**  
+
+```sql
+SELECT AVG(Quantity) [Average Quantity] 
+FROM dbo.Sales;
+```
+✅ Returns the average quantity sold across all records.
+### **SUM & AVG for Each Product**  
+
+```sql
+-- Sum of Quantity, sum of TotalAmount, avg of Quantity, avg of TotalAmount for each distinct product
+SELECT 
+    ProductID,
+    SUM(Quantity) AS [Total Quantity],
+    SUM(TotalAmount) AS [Sum of Amount],
+    AVG(Quantity)   AS [Average Quantity Sold],
+    AVG(TotalAmount) AS [Average Amount]
+FROM dbo.Sales
+GROUP BY ProductID;
+```
+### **COUNT – Number of Rows in table**  
+
+```sql
+SELECT COUNT(*) [Number of Rows] 
+FROM dbo.Sales;
+```
+✅ Counts all rows in the Sales table.
+### **COUNT on a Column**  
+
+```sql
+SELECT COUNT(PaymentMethod) [No of Records] 
+FROM dbo.Sales;
+```
+✅ Counts all non-NULL values in the PaymentMethod column.
+### **COUNT DISTINCT – Unique Products**  
+
+```sql
+SELECT COUNT(DISTINCT ProductID) [Distinct Products] 
+FROM dbo.Sales;
+```
+### **Count of Records by Payment Method**  
+
+```sql
+SELECT PaymentMethod, COUNT(*) [Pay Mode] 
+FROM dbo.Sales
+GROUP BY PaymentMethod;
+```
+✅ Groups sales by PaymentMethod and counts the number of records for each payment mode.
+- **COUNT(*)** → Counts all rows (including `NULL`s).  
+- **COUNT(column)** → Counts only non-`NULL` values in that column.  
+- **COUNT(DISTINCT column)** → Counts distinct values in that column.
