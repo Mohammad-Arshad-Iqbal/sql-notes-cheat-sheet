@@ -591,3 +591,301 @@ GROUP BY PaymentMethod;
 - **COUNT(*)** → Counts all rows (including `NULL`s).  
 - **COUNT(column)** → Counts only non-`NULL` values in that column.  
 - **COUNT(DISTINCT column)** → Counts distinct values in that column.
+## 15.SQL GROUP BY & HAVING Clause  
+
+The `GROUP BY` clause groups rows that have the same values into summary rows, often used with aggregate functions (`SUM`, `AVG`, `COUNT`, etc.).  
+The `HAVING` clause is like `WHERE`, but it filters results **after aggregation**.It is used for selection of group mean which group we need based on condition for example we only need those group where number of element is 10 or sum within group is 1000.
+
+---
+
+### Example – GROUP BY with HAVING  
+
+```sql
+-- Total Sales, Avg Sales, Total Quantity, Avg Quantity for each distinct product
+SELECT 
+    ProductID,
+    SUM(TotalAmount) [Sum of Sales],
+    SUM(Quantity)    [Total Quantity],
+    AVG(TotalAmount) [Avg Amount],
+    AVG(Quantity)    [Avg Quantity]
+FROM dbo.Sales
+GROUP BY ProductID
+HAVING SUM(TotalAmount) < 700 AND SUM(Quantity) = 21;
+```
+## Difference Between WHERE and HAVING  
+
+| Feature              | WHERE Clause 🟦                          | HAVING Clause 🟥                          |
+|-----------------------|-------------------------------------------|-------------------------------------------|
+| **Usage**            | Filters rows **before aggregation**       | Filters groups **after aggregation**       |
+| **Works With**       | Raw data rows                            | Aggregated results (`SUM`, `AVG`, etc.)    |
+| **Aggregate Functions** | Cannot be used with aggregate functions directly (except in subqueries) | Can be used with aggregate functions       |
+| **Execution Order**  | Applied first                            | Applied after `GROUP BY`                   |
+
+---
+
+
+## 16.SQL INNER JOIN  
+
+The `INNER JOIN` keyword selects records that have **matching values** in both tables.  
+
+---
+
+### Example Tables  
+
+#### Table: Employees  
+
+| EmployeeID | FirstName | LastName | DepartmentID |
+|------------|-----------|----------|--------------|
+| 1          | John      | Doe      | 101          |
+| 2          | Jane      | Smith    | 102          |
+| 3          | Alice     | Johnson  | 103          |
+| 4          | Bob       | Brown    | 101          |
+| 5          | Emily     | Davis    | 104          |
+
+#### Table: Departments  
+
+| DepartmentID | DepartmentName |
+|--------------|----------------|
+| 101          | HR             |
+| 102          | IT             |
+| 103          | Finance        |
+| 105          | Marketing      |
+
+---
+
+### INNER JOIN Query  
+
+```sql
+SELECT 
+    e.EmployeeID,
+    e.FirstName,
+    e.LastName,
+    d.DepartmentName
+FROM Employees e
+INNER JOIN Departments d
+    ON e.DepartmentID = d.DepartmentID;
+```
+#### Table: Output
+| EmployeeID | FirstName | LastName | DepartmentName |
+|------------|-----------|----------|----------------|
+| 1          | John      | Doe      | HR             |
+| 2          | Jane      | Smith    | IT             |
+| 3          | Alice     | Johnson  | Finance        |
+| 4          | Bob       | Brown    | HR             |
+
+- The INNER JOIN returns only the rows where DepartmentID exists in both Employees and Departments tables.
+
+- Employee Emily (DepartmentID = 104) does not appear in the result because DepartmentID 104 does not exist in Departments table.
+## 17.SQL LEFT JOIN  
+
+The `LEFT JOIN` keyword returns **all records from the left table (Employees)**, and the **matched records from the right table (Departments)**.  
+If there is no match, NULL values are returned for columns from the right table.  
+
+---
+
+### Example Tables  
+
+#### Table: Employees  
+
+| EmployeeID | FirstName | LastName | DepartmentID |
+|------------|-----------|----------|--------------|
+| 1          | John      | Doe      | 101          |
+| 2          | Jane      | Smith    | 102          |
+| 3          | Alice     | Johnson  | 103          |
+| 4          | Bob       | Brown    | 101          |
+| 5          | Emily     | Davis    | 104          |
+
+#### Table: Departments  
+
+| DepartmentID | DepartmentName |
+|--------------|----------------|
+| 101          | HR             |
+| 102          | IT             |
+| 103          | Finance        |
+| 105          | Marketing      |
+
+---
+
+### LEFT JOIN Query  
+
+```sql
+SELECT 
+    e.EmployeeID,
+    e.FirstName,
+    e.LastName,
+    d.DepartmentName
+FROM Employees e
+LEFT JOIN Departments d
+    ON e.DepartmentID = d.DepartmentID;
+```
+#### Table: Output  
+| EmployeeID | FirstName | LastName | DepartmentName |
+|------------|-----------|----------|----------------|
+| 1          | John      | Doe      | HR             |
+| 2          | Jane      | Smith    | IT             |
+| 3          | Alice     | Johnson  | Finance        |
+| 4          | Bob       | Brown    | HR             |
+| 5          | Emily     | Davis    | NULL           |
+- All employees are shown (from the left table).
+
+- Emily’s DepartmentID = 104 does not exist in the Departments table, so her DepartmentName is NULL.
+
+- Department Marketing (105) is not shown because no employee belongs to it (but will appear if we use RIGHT JOIN).
+## 18.SQL FULL OUTER JOIN  
+
+The `FULL OUTER JOIN` keyword returns **all records** when there is a match in either the left table (Employees) or the right table (Departments).  
+If there is no match, NULL values are returned for the missing side.  
+
+---
+
+### Example Tables  
+
+#### Table: Employees  
+
+| EmployeeID | FirstName | LastName | DepartmentID |
+|------------|-----------|----------|--------------|
+| 1          | John      | Doe      | 101          |
+| 2          | Jane      | Smith    | 102          |
+| 3          | Alice     | Johnson  | 103          |
+| 4          | Bob       | Brown    | 101          |
+| 5          | Emily     | Davis    | 104          |
+
+#### Table: Departments  
+
+| DepartmentID | DepartmentName |
+|--------------|----------------|
+| 101          | HR             |
+| 102          | IT             |
+| 103          | Finance        |
+| 105          | Marketing      |
+
+---
+
+### FULL OUTER JOIN Query  
+
+```sql
+SELECT 
+    e.EmployeeID,
+    e.FirstName,
+    e.LastName,
+    d.DepartmentName
+FROM Employees e
+FULL OUTER JOIN Departments d
+    ON e.DepartmentID = d.DepartmentID;
+```
+#### Output
+| EmployeeID | FirstName | LastName | DepartmentName |
+|------------|-----------|----------|----------------|
+| 1          | John      | Doe      | HR             |
+| 2          | Jane      | Smith    | IT             |
+| 3          | Alice     | Johnson  | Finance        |
+| 4          | Bob       | Brown    | HR             |
+| 5          | Emily     | Davis    | NULL           |
+| NULL       | NULL      | NULL     | Marketing      |
+- Includes all employees (from Employees) and all departments (from Departments).
+
+- Emily’s DepartmentID = 104 has no matching department, so DepartmentName = NULL.
+
+- Department Marketing (105) has no matching employee, so EmployeeID, FirstName, and LastName are NULL.
+## SQL ANTI LEFT JOIN  
+
+An **ANTI LEFT JOIN** is not a separate keyword in SQL.  
+It is implemented using a `LEFT JOIN` combined with a `WHERE` condition checking for `NULL`.  
+
+It helps to find records in the **left table** that have **no matching record** in the right table.  
+
+---
+
+### Example Tables  
+
+#### Table: Employees  
+
+| EmployeeID | FirstName | LastName | DepartmentID |
+|------------|-----------|----------|--------------|
+| 1          | John      | Doe      | 101          |
+| 2          | Jane      | Smith    | 102          |
+| 3          | Alice     | Johnson  | 103          |
+| 4          | Bob       | Brown    | 101          |
+| 5          | Emily     | Davis    | 104          |
+
+#### Table: Departments  
+
+| DepartmentID | DepartmentName |
+|--------------|----------------|
+| 101          | HR             |
+| 102          | IT             |
+| 103          | Finance        |
+| 105          | Marketing      |
+
+---
+
+### Anti Left Join Query  
+
+```sql
+-- Find employees whose DepartmentID does not exist in Departments table
+SELECT 
+    e.EmployeeID,
+    e.FirstName,
+    e.LastName,
+    e.DepartmentID
+FROM Employees e
+LEFT JOIN Departments d
+    ON e.DepartmentID = d.DepartmentID
+WHERE d.DepartmentID IS NULL;
+```
+#### Table: Output
+| EmployeeID | FirstName | LastName | DepartmentID |
+|------------|-----------|----------|--------------|
+| 5          | Emily     | Davis    | 104          |
+- Employee Emily (DepartmentID = 104) does not have a matching department in the Departments table.
+
+- Hence, only Emily is returned in the result.
+## SQL SELF JOIN  
+
+A **SELF JOIN** is a regular join, but the table is joined with itself.  
+We use table **aliases** to differentiate between the two instances of the same table.  
+
+It is commonly used to find relationships within a table, like:  
+- Employees and their managers  
+- Comparing rows in the same dataset  
+
+---
+
+### Example Table: Employees  
+
+| EmployeeID | FirstName | LastName | ManagerID |
+|------------|-----------|----------|-----------|
+| 1          | John      | Doe      | NULL      |
+| 2          | Jane      | Smith    | 1         |
+| 3          | Alice     | Johnson  | 1         |
+| 4          | Bob       | Brown    | 2         |
+| 5          | Emily     | Davis    | 3         |
+
+---
+
+### Self Join Query  
+
+```sql
+-- Show employees with their managers
+SELECT 
+    e.EmployeeID,
+    e.FirstName AS EmployeeName,
+    m.FirstName AS ManagerName
+FROM Employees e
+INNER JOIN Employees m
+    ON e.ManagerID = m.EmployeeID;
+```
+### Table: output
+| EmployeeID | EmployeeName | ManagerName |
+|------------|--------------|-------------|
+| 2          | Jane         | John        |
+| 3          | Alice        | John        |
+| 4          | Bob          | Jane        |
+| 5          | Emily        | Alice       |
+The table Employees is joined with itself.
+
+- Alias e → represents employees.
+
+- Alias m → represents managers.
+
+- Employees with ManagerID = NULL (like John) do not appear in the result.
